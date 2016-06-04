@@ -1,9 +1,3 @@
-
-
-
-
-
-
 select [ ename = 'marry' & dname = 'research' ] ( employee join department )
 
 theta ename = 'marry' & dname = 'research'
@@ -12,6 +6,8 @@ employee department
 
 x
 employee(ename = 'marry') department(dname = 'research')
+
+
 
 
 projection [ bdate ] ( select [ ename = 'jhon' & dname = 'research' ] ( employee join department ) )
