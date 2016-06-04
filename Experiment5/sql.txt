@@ -1,0 +1,42 @@
+
+
+
+
+
+
+select [ ename = 'marry' & dname = 'research' ] ( employee join department )
+
+theta ename = 'marry' & dname = 'research'
+x
+employee department
+
+x
+employee(ename = 'marry') department(dname = 'research')
+
+
+projection [ bdate ] ( select [ ename = 'jhon' & dname = 'research' ] ( employee join department ) )
+
+projection bdate
+theta ename = 'jhon' & dname = 'research'
+x
+employee department
+
+projection bdate
+x
+employee(ename = 'john') department(dname = 'research')
+
+
+
+
+
+
+
+select [ essn = '01' ] ( projection [ essn , pname ] ( works_on join project ) )
+theta essn = '01'
+projection essn , pname
+x
+works_on project
+
+projection essn, panme
+x
+works_on(essn = '01') project
