@@ -70,20 +70,47 @@ void nestLoopJoin(Buffer& R, Buffer& S)
 	}
 	fprintf(fp, "select * from R, S where R.A = S.C\n");
 	fprintf(fp, "	A	B	C	D\n");
-	pair* containerR = new pair[LENR];
-	pair* containerS = new pair[LENS];
-	if (R.getAllPair(containerR) && S.getAllPair(containerS))
+	//pair* containerR = new pair[LENR];
+	//pair* containerS = new pair[LENS];
+	//if (R.getAllPair(containerR) && S.getAllPair(containerS))
+	//{
+	//	for (int i = 0; i < LENR; i++)
+	//		for (int j = 0; j < LENS; j++)
+	//		{
+	//			if (containerR[i].first == containerS[j].first)
+	//				fprintf(fp, "	%d	%d	%d	%d\n", containerR[i].first, containerR[i].second,
+	//					containerS[j].first, containerS[j].second);
+	//		}
+	//}
+	//delete[]containerR;
+	//delete[]containerS;
+	int counterR = 0;
+	int nextR = R.getHead();
+	while (nextR > 0)
 	{
-		for (int i = 0; i < LENR; i++)
-			for (int j = 0; j < LENS; j++)
+		if (R.readBlk(nextR))
+		{
+			int counterS = 0;
+			int nextS = S.getHead();
+			while (nextS > 0)
 			{
-				if (containerR[i].first == containerS[j].first)
-					fprintf(fp, "	%d	%d	%d	%d\n", containerR[i].first, containerR[i].second,
-						containerS[j].first, containerS[j].second);
+				if (S.readBlk(nextS))
+				{
+					pair *tmpR = R.getContainer();
+					pair *tmpS = S.getContainer();
+					for (int i = 0; i < (BLK - 1); i++)
+						for (int j = 0; j < (BLK - 1); j++)
+						{
+							if (tmpR[i].first == tmpS[j].first)
+								fprintf(fp, "	%d	%d	%d	%d\n", tmpR[i].first, tmpR[i].second,
+								tmpS[j].first, tmpS[j].second);
+						}
+				}
+				nextS = S.getNext();
 			}
+		}
+		nextR = R.getNext();
 	}
-	delete[]containerR;
-	delete[]containerS;
 	fclose(fp);
 	return;
 }
@@ -98,37 +125,79 @@ void mergeJoin(Buffer& R, Buffer& S)
 	}
 	fprintf(fp, "select * from R, S where R.A = S.C\n");
 	fprintf(fp, "	A	B	C	D\n");
-	pair* containerR = new pair[LENR];
-	pair* containerS = new pair[LENS];
-	if (R.getAllPair(containerR) && S.getAllPair(containerS))
+	//pair* containerR = new pair[LENR];
+	//pair* containerS = new pair[LENS];
+	//if (R.getAllPair(containerR) && S.getAllPair(containerS))
+	//{
+	//	qsort(containerR, LENR, sizeof(containerR[0]), cmp);
+	//	//for (int i = 0; i < LENR; i++)
+	//	//	printf("%d\n", containerR[i].first);
+	//	qsort(containerS, LENS, sizeof(containerS[0]), cmp);
+	//	int i = 0, j = 0;
+	//	int lenI, lenJ;
+	//	while (i < LENR && j < LENS)
+	//	{
+	//		if (containerR[i].first == containerS[j].first)
+	//		{
+	//			lenI = countSame(containerR, i, LENR);
+	//			lenJ = countSame(containerS, j, LENS);
+	//			for (int r = 0; r < lenI; r++)
+	//				for (int s = 0; s < lenJ; s++)
+	//					fprintf(fp, "	%d	%d	%d	%d\n", containerR[r+i].first, containerR[r+i].second,
+	//					containerS[s+j].first, containerS[s+j].second);
+	//			i += lenI;
+	//			j += lenJ;
+	//		}
+	//		else if (containerR[i].first < containerS[j].first)
+	//			i++;
+	//		else
+	//			j++;
+	//	}
+	//}
+	//delete[]containerR;
+	//delete[]containerS;	int counterR = 0;
+	int nextR = R.getHead();
+	while (nextR > 0)
 	{
-		qsort(containerR, LENR, sizeof(containerR[0]), cmp);
-		//for (int i = 0; i < LENR; i++)
-		//	printf("%d\n", containerR[i].first);
-		qsort(containerS, LENS, sizeof(containerS[0]), cmp);
-		int i = 0, j = 0;
-		int lenI, lenJ;
-		while (i < LENR && j < LENS)
+		if (R.readBlk(nextR))
 		{
-			if (containerR[i].first == containerS[j].first)
+			int counterS = 0;
+			int nextS = S.getHead();
+			while (nextS > 0)
 			{
-				lenI = countSame(containerR, i, LENR);
-				lenJ = countSame(containerS, j, LENS);
-				for (int r = 0; r < lenI; r++)
-					for (int s = 0; s < lenJ; s++)
-						fprintf(fp, "	%d	%d	%d	%d\n", containerR[r+i].first, containerR[r+i].second,
-						containerS[s+j].first, containerS[s+j].second);
-				i += lenI;
-				j += lenJ;
+				if (S.readBlk(nextS))
+				{
+					int len = BLK - 1;
+					pair *tmpR = R.getContainer();
+					pair *tmpS = S.getContainer();
+					qsort(tmpR, len, sizeof(tmpR[0]), cmp);
+					qsort(tmpS, len, sizeof(tmpS[0]), cmp);
+					int i = 0, j = 0;
+					int lenI, lenJ;
+					while (i < len && j < len)
+					{
+						if (tmpR[i].first == tmpS[j].first)
+						{
+							lenI = countSame(tmpR, i, len);
+							lenJ = countSame(tmpS, j, len);
+							for (int r = 0; r < lenI; r++)
+								for (int s = 0; s < lenJ; s++)
+									fprintf(fp, "	%d	%d	%d	%d\n", tmpR[r + i].first, tmpR[r + i].second,
+									tmpS[s + j].first, tmpS[s + j].second);
+							i += lenI;
+							j += lenJ;
+						}
+						else if (tmpR[i].first < tmpS[j].first)
+							i++;
+						else
+							j++;
+					}
+				}
+				nextS = S.getNext();
 			}
-			else if (containerR[i].first < containerS[j].first)
-				i++;
-			else
-				j++;
 		}
+		nextR = R.getNext();
 	}
-	delete[]containerR;
-	delete[]containerS;
 	fclose(fp);
 	return;
 }

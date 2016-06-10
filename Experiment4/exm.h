@@ -30,6 +30,7 @@ public:
 	int getNext();
 	int getNumBlk();
 	int getNumIO();
+	pair *getContainer();
 private:
 	int headAddr;
 	int numBlk;

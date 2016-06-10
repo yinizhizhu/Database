@@ -230,3 +230,8 @@ int Buffer::getNumIO()
 {
 	return numIO;
 }
+
+pair *Buffer::getContainer()
+{
+	return container;
+}
