@@ -21,3 +21,4 @@
 	projection [ bdate ] ( select [ ename = 'jhon' & dname = 'research' ] ( employee join department ) )
 	select [ essn = '01' ] ( projection [ essn , pname ] ( works_on join project ) )
 	
+select * from table order by table_feature into outfile 'filename';
